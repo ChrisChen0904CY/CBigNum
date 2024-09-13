@@ -94,6 +94,9 @@ int main() {
 	cout << "(" << num9 << ") / (" << num8 << ")" << " = " << (num9 / num8) << endl;
 	cout << "(123.12) / (11.245) = " << (CBigNum(123.12) / CBigNum(11.245)) << endl;
 	cout << "(-123.12) / (11.245) = " << (CBigNum(-123.12) / CBigNum(11.245)) << endl;
+	cout << "(1) / (64) = " << (CBigNum(1) / CBigNum(64)) << endl;
+	cout << "(100) / (2) = " << (CBigNum(100) / CBigNum(2)) << endl;
+	cout << "(1234567898765432123456789) / (12.3456789) = " << (CBigNum("1234567898765432123456789") / CBigNum("12.3456789")) << endl;
 	cout << "====== Division Test Ending ======" << endl << endl;
 }
 
