@@ -1,6 +1,6 @@
 <div align="center">
 	<p>
-      <img width="50%" src="https://pic.imgdb.cn/item/66e900c7d9c307b7e997fd76.png">
+      <img width="50%" src="./Logo_Long_Width.png">
   </p>
 	<a href="./README.md">中文</a>|<a href="./ReadMe_EN.md">English</a>
 </div>
