@@ -5,6 +5,13 @@ bool CBigNum::isNum(char c) {
 	return ('0' <= c && c <= '9');
 }
 
+CBigNum abs(const CBigNum& num) {
+	if (num.getPositive()) {
+		return num;
+	}
+	return -num;
+}
+
 void CBigNum::zeroClear() {
 	size_t pos = 0;
 	// Eliminate prefix zeros
@@ -46,11 +53,14 @@ CBigNum CBigNum::getFrac() const {
 	return CBigNum({}, this->fracs);
 }
 
-CBigNum CBigNum::abs(const CBigNum& num) const {
-	if (num.getPositive()) {
-		return num;
+void CBigNum::round(long long bits) {
+	if (this->fracs.size() <= bits) {
+		return;
 	}
-	return -num;
+	this->fracs.erase(this->fracs.begin()+bits, this->fracs.end());
+	if (this->fracs[bits] >= '5') {
+		*(this) += CBigNum(1) >> bits;
+	}
 }
 
 /* ====== Construct & Deconstruct Functions ====== */
@@ -64,11 +74,13 @@ CBigNum::CBigNum(const CBigNum& other) {
 	this->positive = other.positive;
 	this->ints = other.ints;
 	this->fracs = other.fracs;
+	this->resFracBits = other.resFracBits;
 }
-CBigNum& CBigNum::operator=(const CBigNum other) {
+CBigNum& CBigNum::operator=(const CBigNum& other) {
 	this->positive = other.positive;
 	this->ints = other.ints;
 	this->fracs = other.fracs;
+	this->resFracBits = other.resFracBits;
 	return *this;
 }
 
@@ -109,6 +121,13 @@ CBigNum::CBigNum(string s) {
 		fracs = {};
 		return;
 	}
+	// Convert scientific mode to normal mode
+	size_t pos = s.find_first_of("eE");
+	long long moveBits = 0;
+	if (pos != std::string::npos) {
+    moveBits = std::stoll(s.substr(pos + 1));
+    s = s.substr(0, pos);
+  }
 	// Check the other characters
 	bool dotFind = false;
 	for (auto i = 1; i < s.size(); i++) {
@@ -149,6 +168,10 @@ CBigNum::CBigNum(string s) {
 			}
 		}
 	}
+	// Shift when needed
+	if (moveBits != 0) {
+		(*this) <<= moveBits;
+	}
 	this->zeroClear();
 }
 
@@ -183,6 +206,9 @@ vector<char> CBigNum::getInts() const {
 }
 vector<char> CBigNum::getFracs() const {
 	return this->fracs;
+}
+long long CBigNum::getResFracBits() const {
+  return this->resFracBits;
 }
 void CBigNum::setPositive(bool p) {
 	this->positive = p;
@@ -243,7 +269,7 @@ bool CBigNum::operator>(const CBigNum other) const {
 	if ((*this) == other) {
 		return false;
 	}
-	return (*this) >= other;
+	return !((*this) < other);
 }
 
 bool CBigNum::operator<(const CBigNum other) const {
@@ -263,26 +289,24 @@ bool CBigNum::operator<(const CBigNum other) const {
 	else if (this->ints != other.ints) {
 		for (auto i = 0; i < this->ints.size(); i++) {
 			if (this->ints[i] != other.ints[i]) {
-				return this->ints[i] < other.ints[i];
+				return this->positive ? this->ints[i] < other.ints[i] : this->ints[i] > other.ints[i];
 			}
 		}
 	}
 	// Compare the fraction part
 	for (auto i = 0; i < min(this->fracs.size(), other.fracs.size()); i++) {
-		if (this->positive && this->fracs[i] < other.fracs[i]) {
-			return true;
-		}
-		if (!this->positive && this->fracs[i] > other.fracs[i]) {
-			return true;
+		if (this->fracs[i] != other.fracs[i]) {
+		  return this->positive ? this->fracs[i] < other.fracs[i] : this->fracs[i] > other.fracs[i];
 		}
 	}
-	if (!this->positive) {
-		return this->fracs.size() > other.fracs.size();
-	}
-	return this->fracs.size() < other.fracs.size();
+	return false;
 }
 
 bool CBigNum::operator==(const CBigNum other) const {
+	// 0 and 0 don't take care of positive
+	if ((this->ints.empty() && other.ints.empty()) && (this->fracs.empty() && other.fracs.empty())) {
+		return true;
+	}
 	return (this->positive == other.positive) && (this->ints == other.ints) && (this->fracs == other.fracs);
 }
 
@@ -408,7 +432,7 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 		// (+)-(+) --- The normal condition
 		else {
 			// IF the latter one is bigger
-			if (*(this) < other) {
+			if (*this < other) {
 				return -(other-(*this));
 			}
 			// Prepare two new vectors to construct the answer
@@ -428,7 +452,7 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 				}
 				else if (num2.fracs.size() < maxSize) {
 					long long zeros = maxSize - num2.fracs.size();
-					for(auto i = 0; i < maxSize - zeros; i++) {
+					for(auto i = 0; i < zeros; i++) {
 						num2.fracs.push_back('0');
 					}
 				}
@@ -516,6 +540,7 @@ CBigNum CBigNum::operator<<(const long long& bits) const {
 			res.fracs.erase(res.fracs.begin(), res.fracs.begin()+1);
 		}
 	}
+	res.zeroClear();
 	return res;
 }
 
@@ -547,6 +572,7 @@ CBigNum CBigNum::operator>>(const long long& bits) const {
 		res.fracs.insert(res.fracs.begin(), res.ints.end()-bits, res.ints.end());
 		res.ints.erase(res.ints.end()-bits, res.ints.end());
 	}
+	res.zeroClear();
 	return res;
 }
 
@@ -619,7 +645,7 @@ pair<CBigNum, CBigNum> CBigNum::intDivision(const CBigNum& other) const {
 	// Divsion draft bits
 	long long draftBits = num1.getInts().size()-num2.getInts().size();
 	// Do Minus by bits
-	while (num1 > num2) {
+	while (num1 >= num2) {
 		// Update the draft bits
 		if (num1 < (num2 << draftBits)) {
 			draftBits--;

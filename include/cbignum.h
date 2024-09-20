@@ -3,10 +3,12 @@
 
 #include <iostream>
 #include <cstring>
+#include <cstdlib>
 #include <vector>
 
 using namespace std;
 
+// Display a vector
 template <typename T>
 void vecDisplay(vector<T> vec) {
 	for (auto element:vec) {
@@ -33,7 +35,7 @@ public:
 	CBigNum();
 	// Copy Construction
 	CBigNum(const CBigNum& other);
-	CBigNum& operator=(const CBigNum other);
+	CBigNum& operator=(const CBigNum& other);
 	// Signed Num
 	CBigNum(short n) : CBigNum(static_cast<long long int>(n)) {};
 	CBigNum(int n) : CBigNum(static_cast<long long int>(n)) {};
@@ -60,6 +62,7 @@ public:
 	bool getPositive() const;
 	vector<char> getInts() const;
 	vector<char> getFracs() const;
+	long long getResFracBits() const;
 	void setPositive(bool p);
 	void setInts(vector<char> newInts);
 	void setFracs(vector<char> newFracs);
@@ -73,7 +76,7 @@ public:
 	void zeroClear();
 	CBigNum getInt() const;
 	CBigNum getFrac() const;
-	CBigNum abs(const CBigNum& num) const;
+	void round(long long bits);
 	
 	/**
 	* @Breif: Compare Operators
@@ -126,6 +129,112 @@ private:
 	// Residual fraction bits
 	long long resFracBits = 8;
 };
+
+/* Operatoin Template */
+template <typename T>
+CBigNum any2BigNum(T value) {
+  CBigNum num(value);
+  return num;
+}
+
+
+// Addition Template
+template <typename T>
+CBigNum operator+(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num + other;
+}
+// +=
+template <typename T>
+void operator+=(CBigNum& num, const T& value) {
+    num += any2BigNum(value);
+}
+
+// Subtraction Template
+template <typename T>
+CBigNum operator-(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num - other;
+}
+// -=
+template <typename T>
+void operator-=(CBigNum& num, const T& value) {
+    num -= any2BigNum(value);
+}
+
+// Multiplication Template
+template <typename T>
+CBigNum operator*(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num * other;
+}
+// *=
+template <typename T>
+void operator*=(CBigNum& num, const T& value) {
+    num *= any2BigNum(value);
+}
+
+// Division Template
+template <typename T>
+CBigNum operator/(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num / other;
+}
+// /=
+template <typename T>
+void operator/=(CBigNum& num, const T& value) {
+    num /= any2BigNum(value);
+}
+
+// Modulo Template
+template <typename T>
+CBigNum operator%(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num % other;
+}
+// %=
+template <typename T>
+void operator%=(CBigNum& num, const T& value) {
+    num %= any2BigNum(value);
+}
+
+/* Compare Template */
+// > & >=
+template <typename T>
+bool operator>(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num > other;
+}
+template <typename T>
+bool operator>=(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num >= other;
+}
+// < & <=
+template <typename T>
+bool operator<(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num < other;
+}
+template <typename T>
+bool operator<=(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num <= other;
+}
+// == & !=
+template <typename T>
+bool operator==(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num == other;
+}
+template <typename T>
+bool operator!=(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num != other;
+}
+
+// abs Function
+CBigNum abs(const CBigNum& num);
 
 #endif
 

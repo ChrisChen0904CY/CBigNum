@@ -1,4 +1,5 @@
 #include "cbignum.h"
+#include "cbigmath.h"
 
 using namespace std;
 
@@ -14,7 +15,8 @@ int main() {
 	CBigNum num5("0001.2345678900");
 	CBigNum num6("-123465789.987654321");
 	CBigNum num7("1..02");
-	cout << "String Construction: " << num5 << " " << num6 << " " << num7 << endl;
+	CBigNum nume("1.7506827451479023e-07");
+	cout << "String Construction: " << num5 << " " << num6 << " " << num7 << " " << nume << endl;
 	CBigNum num8(1.23456);
 	CBigNum num9(-23456.123);
 	CBigNum num10(0.1);
@@ -82,10 +84,11 @@ int main() {
 	cout << "(" << num9 << ") // (" << num8 << ")" << " = " << (num9.intDivision(num8)).first << " + " << (num9.intDivision(num8)).second << endl;
 	cout << "(123.12) // (11.245) = " << (CBigNum(123.12).intDivision(CBigNum(11.245))).first << " + " << (CBigNum(123.12).intDivision(CBigNum(11.245))).second << endl;
 	cout << "(-123.12) // (11.245) = " << (CBigNum(-123.12).intDivision(CBigNum(11.245))).first << " + " << (CBigNum(-123.12).intDivision(CBigNum(11.245))).second << endl;
+	cout << "(10) // (2) = " << (CBigNum(10).intDivision(2)).first << " + " << (CBigNum(10).intDivision(CBigNum(2))).second << endl;
 	cout << "====== Int Division Test Ending ======" << endl << endl;
 	/* Division Testing */
 	cout << "====== Division Testing ======" << endl;
-	num2.setResFracBits(16);
+	num2.setResFracBits(32);
 	cout << "(" << num2 << ") / (" << num8 << ")" << " = " << (num2 / num8) << endl;
 	num3.setResFracBits(32);
 	cout << "(" << num3 << ") / (" << num9 << ")" << " = " << (num3 / num9) << endl;
@@ -110,5 +113,56 @@ int main() {
 	cout << "(1000) % (25) = " << (CBigNum(1000) % CBigNum(25)) << endl;
 	cout << "(1234567898765432123456789) % (12.3456789) = " << (CBigNum("1234567898765432123456789") % CBigNum("12.3456789")) << endl;
 	cout << "====== Mod Test Ending ======" << endl << endl;
+	/* Template Operation Testing */
+	cout << "====== Template Operation Testing ======" << endl;
+	cout << "(" << num2 << ") + (114.514)" << " = " << (num2 + 114.514) << endl;
+	cout << "(" << num2 << ") - (114.514)" << " = " << (num2 - 114.514) << endl;
+	cout << "(" << num2 << ") * (114.514)" << " = " << (num2 * 114.514) << endl;
+	cout << "(" << num2 << ") / (114.514)" << " = " << (num2 / 114.514) << endl;
+	cout << "(" << num2 << ") % (114.514)" << " = " << (num2 % "114.514") << endl;
+	cout << "(" << num8 << ") + (1)" << " = " << (num8 + 1) << endl;
+	cout << "(" << num8 << ") - (1)" << " = " << (num8 - 1) << endl;
+	cout << "(" << num8 << ") * (114.514)" << " = " << (num8 * 114.514) << endl;
+	cout << "(" << num8 << ") / (114.514)" << " = " << (num8 / 114.514) << endl;
+	cout << "(" << num8 << ") % (114.514)" << " = " << (num8 % "114.514") << endl;
+	cout << "====== Template Operation Test Ending ======" << endl << endl;
+	/* Integer Power Testing */
+	cout << "====== Integer Power Testing ======" << endl;
+	cout << "(" << num2 << ") ^ (1)" << " = " << pow(num2, 1) << endl;
+	cout << "(" << num2 << ") ^ (2)" << " = " << pow(num2, 2) << endl;
+	cout << "(" << num2 << ") ^ (10)" << " = " << pow(num2, 10) << endl;
+	cout << "(" << num2 << ") ^ (500)" << " = " << pow(num2, "500") << endl;
+	num2.setResFracBits(64);
+	cout << "(" << num2 << ") ^ (-1)" << " = " << pow(num2, -1) << endl;
+	cout << "(" << num2 << ") ^ (-2)" << " = " << pow(num2, -2) << endl;
+	cout << "(" << num2 << ") ^ (-10)" << " = " << pow(num2, -10) << endl;
+	cout << "(" << num2 << ") ^ (-500)" << " = " << pow(num2, "-500") << endl;
+	cout << "====== Integer Power Test Ending ======" << endl << endl;
+	/* Ln Testing */
+	cout << "====== Ln Testing ======" << endl;
+	num2.setResFracBits(16);
+	cout << "ln(2)" << " = " << ln(2) << endl;
+	cout << "ln(3)" << " = " << ln(3) << endl;
+	cout << "ln(14.123456)" << " = " << ln(14.123456) << endl;
+	cout << "ln(" << num2 << ")" << " = " << ln(num2) << endl;
+	cout << "ln(123456.123)" << " = " << ln(123456.123) << endl;
+	cout << "ln(123456789876543211111111111111000000000000000)" << " = " << ln("123456789876543211111111111111000000000000000") << endl;
+	cout << "ln(1.23456)" << " = " << ln(1.23456) << endl;
+	cout << "ln(0.23456)" << " = " << ln(0.23456) << endl;
+	cout << "====== Ln Test Ending ======" << endl << endl;
+	/* Log Testing */
+	cout << "====== Log Testing ======" << endl;
+	num2.setResFracBits(16);
+	CBigNum base(2);
+	base.setResFracBits(16);
+	cout << "log(2)(2)" << " = " << log(base, 2) << endl;
+	cout << "log(2)(3)" << " = " << log(base, 3) << endl;
+	cout << "log(2)(14.123456)" << " = " << log(base, 14.123456) << endl;
+	cout << "log(2)(" << num2 << ")" << " = " << log(base, num2) << endl;
+	cout << "log(2)(123456.123)" << " = " << log(base, 123456.123) << endl;
+	cout << "log(2)(123456789876543211111111111111000000000000000)" << " = " << log(base, "123456789876543211111111111111000000000000000") << endl;
+	cout << "log(2)(1.23456)" << " = " << log(base, 1.23456) << endl;
+	cout << "log(2)(0.23456)" << " = " << log(base, 0.23456) << endl;
+	cout << "====== Log Test Ending ======" << endl << endl;
 }
 
