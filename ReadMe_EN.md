@@ -1,6 +1,6 @@
 <div align="center">
 	<p>
-      <img width="50%" src="./Logo_Long_Width.png">
+      <img width="50%" src="https://pic.imgdb.cn/item/66e900c7d9c307b7e997fd76.png">
   </p>
 	<a href="./README.md">中文</a>|<a href="./ReadMe_EN.md">English</a>
 </div>
@@ -94,10 +94,11 @@ cmake --install . </pre>
 
 <br>
 
-If you only wish to use this library temporarily, you can directly copy the `cbignum.h` and `cbignum.cpp` files into your project and call them directly:
+If you only wish to use this library temporarily, you can directly copy the `cbignum.h`, `cbigmath.h`, `cbignum.cpp` and `cbigmath.cpp` files into your project and call them directly:
 
 ```cpp
 #include "cbignum.h"
+#include "cbigmath.h"
 ```
 
 ## <a id="chapter-1">1. How to Use</a><a href="#">⬆️</a>
@@ -143,8 +144,32 @@ The table below provides specific descriptions of each operation:
 | Negation         | \-                                                                | None                                                                                                                                                 |
 | Comparison Ops   | >, >=, <, <=, ==, !=                                              | None                                                                                                                                                 |
 | Absolute Value   | `CBigNum abs(const CBigNum& num) const`                           | None                                                                                                                                                 |
+| Round off        | `round(long long bits)`                                           | Round the big number to the specified number of digits, and adjust the precision accordingly to the specified number of digits.                      |
 
-### 1.3 Output Support
+### 1.3 Scientific Computation (cbigmath.h)
+
+This project refers to the book *Practical Numerical Calculation Methods* (by Xifeng Zhen) to complete the implementation of `cbigmath.h` and `cbigmath.cpp`, which provides the functionality to compute the following functions.You can also control the precision of these functions by setting the `resFracBits` value of the big number.
+
+| Scientific Computation | Specific Function | Remarks |
+|:---:|:---:|:---:|
+|Polynomial Calculation|`poly_value(const T& value, T* A, long long n)`|`T` represents all types that can be constructed into `CBigNum`, and array `A` contains the coefficients of each term of the polynomial|
+|$e^x$|`exp(const T& value)`|None|
+|Power Calculation|`pow(const CBigNum& num, const T& value)`|Calculates $num^{value}$|
+|nth Root Calculation|`nrt(const T& value, long long n)`|Computes the nth root for a positive integer n|
+|Square Root|`sqrt(const T& value)`|None|
+|Cube Root|`cbrt(const T& value)`|None|
+|Natural Logarithm|`ln(const T& value)`|The input must be a positive number|
+|Common Logarithm|`log(const CBigNum& base, const T& value)`|The base must be a positive number not equal to 1, and the argument must be positive|
+|Sine Function|`sin(const T& value)`|None|
+|Cosine Function|`cos(const T& value)`|None|
+|Tangent Function|`tan(const T& value)`|None|
+|Cotangent Function|`cot(const T& value)`|None|
+|Arcsine Function|`asin(const T& value)`|The input must be within the range [-1, 1]|
+|Arccosine Function|`acos(const T& value)`|The input must be within the range [-1, 1]|
+|Arctangent Function|`atan(const T& value)`|None|
+|Arccotangent Function|`acot(const T& value)`|None|
+
+### 1.4 Output Support
 
 Objects instantiated from the `CBigNum` type can be directly output via `cout`, and pointers to big numbers can also be directly output.
 

@@ -61,6 +61,25 @@ void CBigNum::round(long long bits) {
 	if (this->fracs[bits] >= '5') {
 		*(this) += CBigNum(1) >> bits;
 	}
+	this->setResFracBits(bits);
+}
+
+string CBigNum::to_str() const {
+	// Zero is the special case
+	if (this->ints.empty() && this->fracs.empty()) {
+		return "0";
+	}
+  string s = this->positive ? "" : "-";
+  for (auto c:this->ints) {
+  	s.push_back(c);
+	}
+	if (!this->fracs.empty()) {
+		s.push_back('.');
+	}
+	for (auto c:this->fracs) {
+  	s.push_back(c);
+	}
+	return s;
 }
 
 /* ====== Construct & Deconstruct Functions ====== */
@@ -172,6 +191,9 @@ CBigNum::CBigNum(string s) {
 	if (moveBits != 0) {
 		(*this) <<= moveBits;
 	}
+	if (this->fracs.size() > 8) {
+		this->resFracBits = this->fracs.size();
+	}
 	this->zeroClear();
 }
 
@@ -190,6 +212,9 @@ CBigNum::CBigNum(vector<char> ints, vector<char> fracs) {
 			break;
 		}
 		this->fracs.push_back(c);
+	}
+	if (this->fracs.size() > 8) {
+		this->resFracBits = this->fracs.size();
 	}
 }
 
@@ -299,6 +324,12 @@ bool CBigNum::operator<(const CBigNum other) const {
 		  return this->positive ? this->fracs[i] < other.fracs[i] : this->fracs[i] > other.fracs[i];
 		}
 	}
+	if (this->fracs.size() > other.fracs.size()) {
+		return !this->positive;
+	}
+	else if (this->fracs.size() < other.fracs.size()) {
+		return this->positive;
+	}
 	return false;
 }
 
@@ -325,6 +356,9 @@ bool CBigNum::operator<=(const CBigNum other) const {
 /* ====== Operating ====== */
 // Add
 CBigNum CBigNum::operator+(const CBigNum& other) const {
+	if (other == 0) {
+		return *(this);
+	}
 	// Same Symbol
 	if (this->positive == other.positive) {
 		// Prepare two new vectors to construct the answer
@@ -384,6 +418,8 @@ CBigNum CBigNum::operator+(const CBigNum& other) const {
 		// Return the answer
 		CBigNum res(newInts, newFracs);
 		res.setPositive(this->positive);
+		// Set the resFracBits
+		res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
 		return res;
 	}
 	// Different symbol called minus operation
@@ -410,6 +446,9 @@ CBigNum CBigNum::operator-() const {
 }
 
 CBigNum CBigNum::operator-(const CBigNum& other) const {
+	if (other == 0) {
+		return *(this);
+	}
 	// Two same number get a zero
 	if ((*this) == other) {
 		return CBigNum(0);
@@ -417,10 +456,10 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 	// Convert to Add --- (+)-(-) OR (-)-(+)
 	if (this->positive != other.positive) {
 		if (!this->positive) {
-			return -(*this)+other;
+			return -(-(*this)+other);
 		}
 		else {
-			return -(-other+(*this));
+			return (-other+(*this));
 		}
 	}
 	// (-)-(-) OR (+)-(+)
@@ -511,6 +550,8 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 			// Return the answer
 			CBigNum res(newInts, newFracs);
 			res.zeroClear();
+			// Set the resFracBits
+		  res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
 			return res;
 		}
 	}
@@ -592,7 +633,7 @@ CBigNum CBigNum::operator*(const CBigNum& other) const {
 			return -((*this)*(-other));
 		}
 		else {
-			return -(-(*this)*(-other));
+			return (-(*this))*(-other);
 		}
 	}
 	// Only Deal With (+)*(+)
@@ -615,8 +656,15 @@ CBigNum CBigNum::operator*(const CBigNum& other) const {
 		res += (num1s[num2.ints[i] - '0'] << moveBits);
 		moveBits++;
 	}
+	// Set the resFracBits
+	res >>= fracBits;
+  res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
+  // Push a zero to ints while it's empty
+	if (res.getInts().empty()) {
+		res.setInts({'0'});
+	}
 	// Revert the fractional part
-	return (res >> fracBits);
+	return res;
 }
 
 void CBigNum::operator*=(const CBigNum& other) {
@@ -707,6 +755,12 @@ CBigNum CBigNum::operator/(const CBigNum& other) const {
 	}
 	// Chop the last one
 	res.fracs.erase(res.fracs.end()-1);
+	// Set the resFracBits
+	res.setResFracBits(this->resFracBits);
+	// Push a zero to ints while it's empty
+	if (res.getInts().empty()) {
+		res.setInts({'0'});
+	}
 	return res;
 }
 

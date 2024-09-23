@@ -1,6 +1,6 @@
 <div align="center">
 	<p>
-      <img width="50%" src="./Logo_Long_Width.png">
+      <img width="50%" src="https://pic.imgdb.cn/item/66e900c7d9c307b7e997fd76.png">
   </p>
 	<a href="./README.md">中文</a>|<a href="./ReadMe_EN.md">English</a>
 </div>
@@ -94,10 +94,11 @@ cmake --install . </pre>
 
 <br>
 
-如果您只是希望短暂地使用本库，你可以直接将 `cbignum.h` 和 `cbignum.cpp` 两个文件复制到您的项目工程中，并直接调用即可：
+如果您只是希望短暂地使用本库，你可以直接将 `cbignum.h`、`cbigmath.h`、`cbignum.cpp` 和 `cbigmath.cpp` 四个文件复制到您的项目工程中，并直接调用即可：
 
 ```cpp
 #include "cbignum.h"
+#include "cbigmath.h"
 ```
 
 ## <a id="chapter-1">1. 如何使用</a><a href="#">⬆️</a>
@@ -143,8 +144,32 @@ CBigNum num(xxx);
 | 负号    | \-                                                                | 无                                                                   |
 | 大小比较符 | >, >=, <, <=, ==, !=                                              | 无                                                                   |
 | 绝对值   | `CBigNum abs(const CBigNum& num) const`                           | 无                                                                   |
+| 四舍五入  | `round(long long bits)`                                           | 将大数四舍五入到指定位数，并将精度位数同步修改到指定位数                                        |
 
-### 1.3 输出支持
+### 1.3 科学计算(cbigmath.h)
+
+本项目参考《实用数值计算方法》(甄西丰 著) 一书完成了 `cbigmath.h` 与 `cbigmath.cpp` 实现了对如下一些函数的计算功能。您同样可以通过设置大数的`resFracBits`值来控制这些函数的计算精度。
+
+| 科学运算 | 具体函数 | 备注 |
+|:---:|:---:|:---:|
+|多项式计算|`poly_value(const T& value, T* A, long long n)`|`T`是所有支持构造成`CBigNum`的类，数组`A`是多项式的每一项系数|
+|$e^x$|`exp(const T& value)`|无|
+|幂运算|`pow(const CBigNum& num, const T& value)`|可以计算$num^{value}$|
+|开n次方根|`nrt(const T& value, long long n)`|可以开正整数n次根|
+|开平方|`sqrt(const T& value)`|无|
+|开立方|`cbrt(const T& value)`|无|
+|自然对数|`ln(const T& value)`|给定的数必须是正数|
+|普通对数|`log(const CBigNum& base, const T& value)`|底数为不是1的正数，真数为正数|
+|正弦函数|`sin(const T& value)`|无|
+|余弦函数|`cos(const T& value)`|无|
+|正切函数|`tan(const T& value)`|无|
+|余切函数|`cot(const T& value)`|无|
+|反正弦函数|`asin(const T& value)`|给定的值必须在[-1, 1]之间|
+|反余弦函数|`acos(const T& value)`|给定的值必须在[-1, 1]之间|
+|反正切函数|`atan(const T& value)`|无|
+|反余切函数|`acot(const T& value)`|无|
+
+### 1.4 输出支持
 
 本大数类型实例化的对象可以直接通过 `cout` 输出，并且大数指针也可以直接输出。
 

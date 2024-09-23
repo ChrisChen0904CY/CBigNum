@@ -77,6 +77,7 @@ public:
 	CBigNum getInt() const;
 	CBigNum getFrac() const;
 	void round(long long bits);
+	string to_str() const;
 	
 	/**
 	* @Breif: Compare Operators
@@ -102,6 +103,30 @@ public:
 	CBigNum operator-() const;
 	CBigNum operator-(const CBigNum& other) const;
 	void operator-=(const CBigNum& other);
+	// Self-Add
+	// Prefix ++
+  CBigNum& operator++() {
+    (*this) += 1;
+    return *this;
+  }
+	// Postfix ++
+	CBigNum operator++(int) {
+    CBigNum temp = *this;
+    (*this) += 1;
+    return temp;
+  }
+  // Self-Minus
+	// Prefix --
+  CBigNum& operator--() {
+    (*this) -= 1;
+    return *this;
+  }
+	// Postfix --
+	CBigNum operator--(int) {
+    CBigNum temp = *this;
+    (*this) -= 1;
+    return temp;
+  }
 	// Move Left
 	CBigNum operator<<(const long long& bits) const;
 	void operator<<=(const long long& bits);
@@ -137,10 +162,14 @@ CBigNum any2BigNum(T value) {
   return num;
 }
 
-
 // Addition Template
 template <typename T>
 CBigNum operator+(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num + other;
+}
+template <typename T>
+CBigNum operator+(const T& value, const CBigNum& num) {
     CBigNum other = any2BigNum(value);
     return num + other;
 }
@@ -156,6 +185,11 @@ CBigNum operator-(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num - other;
 }
+template <typename T>
+CBigNum operator-(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other - num;
+}
 // -=
 template <typename T>
 void operator-=(CBigNum& num, const T& value) {
@@ -165,6 +199,11 @@ void operator-=(CBigNum& num, const T& value) {
 // Multiplication Template
 template <typename T>
 CBigNum operator*(const CBigNum& num, const T& value) {
+    CBigNum other = any2BigNum(value);
+    return num * other;
+}
+template <typename T>
+CBigNum operator*(const T& value, const CBigNum& num) {
     CBigNum other = any2BigNum(value);
     return num * other;
 }
@@ -180,6 +219,11 @@ CBigNum operator/(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num / other;
 }
+template <typename T>
+CBigNum operator/(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other / num;
+}
 // /=
 template <typename T>
 void operator/=(CBigNum& num, const T& value) {
@@ -191,6 +235,11 @@ template <typename T>
 CBigNum operator%(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num % other;
+}
+template <typename T>
+CBigNum operator%(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other % num;
 }
 // %=
 template <typename T>
@@ -206,9 +255,19 @@ bool operator>(const CBigNum& num, const T& value) {
     return num > other;
 }
 template <typename T>
+bool operator>(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other > num;
+}
+template <typename T>
 bool operator>=(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num >= other;
+}
+template <typename T>
+bool operator>=(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other >= num;
 }
 // < & <=
 template <typename T>
@@ -217,9 +276,19 @@ bool operator<(const CBigNum& num, const T& value) {
     return num < other;
 }
 template <typename T>
+bool operator<(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other < num;
+}
+template <typename T>
 bool operator<=(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num <= other;
+}
+template <typename T>
+bool operator<=(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other <= num;
 }
 // == & !=
 template <typename T>
@@ -228,9 +297,19 @@ bool operator==(const CBigNum& num, const T& value) {
     return num == other;
 }
 template <typename T>
+bool operator==(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other == num;
+}
+template <typename T>
 bool operator!=(const CBigNum& num, const T& value) {
     CBigNum other = any2BigNum(value);
     return num != other;
+}
+template <typename T>
+bool operator!=(const T& value, const CBigNum& num) {
+    CBigNum other = any2BigNum(value);
+    return other != num;
 }
 
 // abs Function
