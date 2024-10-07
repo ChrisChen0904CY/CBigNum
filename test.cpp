@@ -119,12 +119,12 @@ int main() {
 	cout << "(" << num2 << ") - (114.514)" << " = " << (num2 - 114.514) << endl;
 	cout << "(" << num2 << ") * (114.514)" << " = " << (num2 * 114.514) << endl;
 	cout << "(" << num2 << ") / (114.514)" << " = " << (num2 / 114.514) << endl;
-	cout << "(" << num2 << ") % (114.514)" << " = " << (num2 % "114.514") << endl;
+	cout << "(" << num2 << ") % (114.514)" << " = " << (num2 % CBigNum("114.514")) << endl;
 	cout << "(" << num8 << ") + (1)" << " = " << (num8 + 1) << endl;
 	cout << "(" << num8 << ") - (1)" << " = " << (num8 - 1) << endl;
 	cout << "(" << num8 << ") * (114.514)" << " = " << (num8 * 114.514) << endl;
 	cout << "(" << num8 << ") / (114.514)" << " = " << (num8 / 114.514) << endl;
-	cout << "(" << num8 << ") % (114.514)" << " = " << (num8 % "114.514") << endl;
+	cout << "(" << num8 << ") % (114.514)" << " = " << (num8 % CBigNum("114.514")) << endl;
 	cout << "====== Template Operation Test Ending ======" << endl << endl;
 	/* Test for cbigmath */
 	cout << "========== Test for cbigmath.h ==========" << endl;
@@ -195,8 +195,8 @@ int main() {
 	/* Triangular Functions Testing */
 	cout << "====== Sin Testing ======" << endl;
 	num2.setResFracBits(16);
-	cout << "sin(2)" << " = " << sin(2) << endl;
-	cout << "sin(3)" << " = " << sin(3) << endl;
+	cout << "sin(2)" << " = " << sin(CBigNum(2)) << endl;
+	cout << "sin(3)" << " = " << sin(CBigNum(3)) << endl;
 	cout << "sin(-14.123456)" << " = " << sin(-14.123456) << endl;
 	cout << "sin(" << num2 << ")" << " = " << sin(num2) << endl;
 	cout << "sin(123456.123)" << " = " << sin(123456.123) << endl;
@@ -205,8 +205,8 @@ int main() {
 	cout << "sin(0.23456)" << " = " << sin(0.23456) << endl;
 	cout << "====== Sin Test Ending ======" << endl << endl;
 	cout << "====== Cos Testing ======" << endl;
-	cout << "cos(2)" << " = " << cos(2) << endl;
-	cout << "cos(3)" << " = " << cos(3) << endl;
+	cout << "cos(2)" << " = " << cos(CBigNum(2)) << endl;
+	cout << "cos(3)" << " = " << cos(CBigNum(3)) << endl;
 	cout << "cos(-14.123456)" << " = " << cos(-14.123456) << endl;
 	cout << "cos(" << num2 << ")" << " = " << cos(num2) << endl;
 	cout << "cos(123456.123)" << " = " << cos(123456.123) << endl;
@@ -215,8 +215,8 @@ int main() {
 	cout << "cos(0.23456)" << " = " << cos(0.23456) << endl;
 	cout << "====== Cos Test Ending ======" << endl << endl;
 	cout << "====== Tan Testing ======" << endl;
-	cout << "tan(2)" << " = " << tan(2) << endl;
-	cout << "tan(3)" << " = " << tan(3) << endl;
+	cout << "tan(2)" << " = " << tan(CBigNum(2)) << endl;
+	cout << "tan(3)" << " = " << tan(CBigNum(3)) << endl;
 	cout << "tan(-14.123456)" << " = " << tan(-14.123456) << endl;
 	cout << "tan(" << num2 << ")" << " = " << tan(num2) << endl;
 	cout << "tan(123456.123)" << " = " << tan(123456.123) << endl;
@@ -237,8 +237,8 @@ int main() {
 	/* Exp Functions Testing */
 	cout << "====== Exp Testing ======" << endl;
 	num2.setResFracBits(16);
-	cout << "e^(2)" << " = " << exp(2) << endl;
-	cout << "e^(3)" << " = " << exp(3) << endl;
+	cout << "e^(2)" << " = " << exp(CBigNum(2)) << endl;
+	cout << "e^(3)" << " = " << exp(CBigNum(3)) << endl;
 	cout << "e^(-14.123456)" << " = " << exp(-14.123456) << endl;
 	cout << "e^(" << num2 << ")" << " = " << exp(num2) << endl;
 	cout << "e^(1234.123)" << " = " << exp(1234.123) << endl;
@@ -261,28 +261,28 @@ int main() {
 	cout << "====== Power Test Ending ======" << endl << endl;
 	/* Anti-Triangular Functions Testing */
 	cout << "====== Arcsin Testing ======" << endl;
-	cout << "arcsin(1)" << " = " << asin(1) << endl;
-	cout << "arcsin(0)" << " = " << asin(0) << endl;
-	cout << "arcsin(-1)" << " = " << asin(-1) << endl;
-	cout << "arcsin(-0.123456)" << " = " << asin(-0.123456) << endl;
-	cout << "arcsin(0.56789)" << " = " << asin(0.56789) << endl;
-	cout << "arcsin(0.1145141919810)" << " = " << asin("0.1145141919810") << endl;
+	cout << "arcsin(1)" << " = " << asin(1, PI) << endl;
+	cout << "arcsin(0)" << " = " << asin(0, PI) << endl;
+	cout << "arcsin(-1)" << " = " << asin(-1, PI) << endl;
+	cout << "arcsin(-0.123456)" << " = " << asin(-0.123456, PI) << endl;
+	cout << "arcsin(0.56789)" << " = " << asin(0.56789, PI) << endl;
+	cout << "arcsin(0.1145141919810)" << " = " << asin("0.1145141919810", PI) << endl;
 	cout << "====== Arcsin Test Ending ======" << endl << endl;
 	cout << "====== Arccos Testing ======" << endl;
-	cout << "arccos(1)" << " = " << acos(1) << endl;
-	cout << "arccos(0)" << " = " << acos(0) << endl;
-	cout << "arccos(-1)" << " = " << acos(-1) << endl;
-	cout << "arccos(-0.123456)" << " = " << acos(-0.123456) << endl;
-	cout << "arccos(0.56789)" << " = " << acos(0.56789) << endl;
+	cout << "arccos(1)" << " = " << acos(1, PI) << endl;
+	cout << "arccos(0)" << " = " << acos(0, PI) << endl;
+	cout << "arccos(-1)" << " = " << acos(-1, PI) << endl;
+	cout << "arccos(-0.123456)" << " = " << acos(-0.123456, PI) << endl;
+	cout << "arccos(0.56789)" << " = " << acos(0.56789, PI) << endl;
 	cout << "arccos(0.1145141919810)" << " = " << acos("0.1145141919810") << endl;
 	cout << "====== Arccos Test Ending ======" << endl << endl;
 	cout << "====== Arctan Testing ======" << endl;
-	cout << "arctan(2)" << " = " << atan(2) << endl;
-	cout << "arctan(3)" << " = " << atan(3) << endl;
-	cout << "arctan(-14.123456)" << " = " << atan(-14.123456) << endl;
-	cout << "arctan(" << num2 << ")" << " = " << atan(num2) << endl;
-	cout << "arctan(123456.123)" << " = " << atan(123456.123) << endl;
-	cout << "arctan(123456789876543211111111111111000000000000000)" << " = " << atan("123456789876543211111111111111000000000000000") << endl;
+	cout << "arctan(2)" << " = " << atan(2, PI) << endl;
+	cout << "arctan(3)" << " = " << atan(3, PI) << endl;
+	cout << "arctan(-14.123456)" << " = " << atan(-14.123456, PI) << endl;
+	cout << "arctan(" << num2 << ")" << " = " << atan(num2, PI) << endl;
+	cout << "arctan(123456.123)" << " = " << atan(123456.123, PI) << endl;
+	cout << "arctan(123456789876543211111111111111000000000000000)" << " = " << atan("123456789876543211111111111111000000000000000", PI) << endl;
 	cout << "arctan(1.23456)" << " = " << atan(1.23456) << endl;
 	cout << "arctan(0.23456)" << " = " << atan(0.23456) << endl;
 	cout << "====== Arctan Test Ending ======" << endl << endl;

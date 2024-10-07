@@ -33,7 +33,7 @@ void CBigNum::zeroClear() {
 	// Eliminate subfix zeros
 	if (!this->fracs.empty()) {
 		pos = 0;
-		for (auto i = this->fracs.size()-1; i >= 0; i--) {
+        for (long long i = this->fracs.size()-1; i >= 0; i--) {
 			if (this->fracs[i] == '0') {
 				pos++;
 			}
@@ -58,7 +58,7 @@ void CBigNum::round(long long bits) {
 		return;
 	}
 	this->fracs.erase(this->fracs.begin()+bits, this->fracs.end());
-	if (this->fracs[bits] >= '5') {
+    if (this->fracs.size() > bits && this->fracs[bits] >= '5') {
 		*(this) += CBigNum(1) >> bits;
 	}
 	this->setResFracBits(bits);
@@ -135,7 +135,7 @@ CBigNum::CBigNum(unsigned long long int n) {
 CBigNum::CBigNum(string s) {
 	// Check the string first
 	// Check the first character
-	if (s[0] != '+' && s[0] != '-' && !isNum(s[0])) {
+	if (s[0] != '+' && s[0] != '-' && s[0] != '.' && !isNum(s[0])) {
 		ints = {};
 		fracs = {};
 		return;
@@ -149,7 +149,7 @@ CBigNum::CBigNum(string s) {
   }
 	// Check the other characters
 	bool dotFind = false;
-	for (auto i = 1; i < s.size(); i++) {
+    for (long long i = 1; i < s.size(); i++) {
 		if (s[i] == '.') {
 			if (!dotFind) {
 				dotFind = true;
@@ -312,14 +312,14 @@ bool CBigNum::operator<(const CBigNum other) const {
 		}
 	}
 	else if (this->ints != other.ints) {
-		for (auto i = 0; i < this->ints.size(); i++) {
+        for (long long i = 0; i < this->ints.size(); i++) {
 			if (this->ints[i] != other.ints[i]) {
 				return this->positive ? this->ints[i] < other.ints[i] : this->ints[i] > other.ints[i];
 			}
 		}
 	}
 	// Compare the fraction part
-	for (auto i = 0; i < min(this->fracs.size(), other.fracs.size()); i++) {
+    for (long long i = 0; i < min(this->fracs.size(), other.fracs.size()); i++) {
 		if (this->fracs[i] != other.fracs[i]) {
 		  return this->positive ? this->fracs[i] < other.fracs[i] : this->fracs[i] > other.fracs[i];
 		}
@@ -369,7 +369,7 @@ CBigNum CBigNum::operator+(const CBigNum& other) const {
 		// Carry Flag
 		short cy = 0;
 		if (maxSize > 0) {
-			for(auto i = maxSize-1; i >= 0; i--) {
+            for(long long i = maxSize-1; i >= 0; i--) {
 				// If there exist a blank, then insert to new num directly
 				if (i >= this->fracs.size()) {
 					newFracs.insert(newFracs.begin(), other.fracs[i]);
@@ -420,6 +420,7 @@ CBigNum CBigNum::operator+(const CBigNum& other) const {
 		res.setPositive(this->positive);
 		// Set the resFracBits
 		res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
+		res.zeroClear();
 		return res;
 	}
 	// Different symbol called minus operation
@@ -485,18 +486,18 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 				// Fill the redundant tail with subfix zero
 				if (num1.fracs.size() < maxSize) {
 					long long zeros = maxSize - num1.fracs.size();
-					for(auto i = 0; i < zeros; i++) {
+                    for(long long i = 0; i < zeros; i++) {
 						num1.fracs.push_back('0');
 					}
 				}
 				else if (num2.fracs.size() < maxSize) {
 					long long zeros = maxSize - num2.fracs.size();
-					for(auto i = 0; i < zeros; i++) {
+                    for(long long i = 0; i < zeros; i++) {
 						num2.fracs.push_back('0');
 					}
 				}
 				// Minus from tail to head --- Deal the FRACTIONAL part first
-				for (auto i = maxSize - 1; i >= 0; i--) {
+                for (long long i = maxSize - 1; i >= 0; i--) {
 					// Borrow from the previous bit
 					if (num1.fracs[i] < num2.fracs[i]) {
 						newFracs.insert(newFracs.begin(), 
@@ -522,18 +523,18 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 				// Fill the redundant head with prefix zero
 				if (num1.ints.size() < maxSize) {
 					long long zeros = maxSize - num1.ints.size();
-					for(auto i = 0; i < zeros; i++) {
+                    for(long long i = 0; i < zeros; i++) {
 						num1.ints.insert(num1.ints.begin(), '0');
 					}
 				}
 				else if (num2.ints.size() < maxSize) {
 					long long zeros = maxSize - num2.ints.size();
-					for(auto i = 0; i < zeros; i++) {
+                    for(long long i = 0; i < zeros; i++) {
 						num2.ints.insert(num2.ints.begin(), '0');
 					}
 				}
 				// Minus from tail to head --- Deal the INTEGER part
-				for (auto i = maxSize - 1; i >= 0; i--) {
+                for (long long i = maxSize - 1; i >= 0; i--) {
 					// Borrow from the previous bit
 					if (num1.ints[i] < num2.ints[i]) {
 						newInts.insert(newInts.begin(),
@@ -551,7 +552,8 @@ CBigNum CBigNum::operator-(const CBigNum& other) const {
 			CBigNum res(newInts, newFracs);
 			res.zeroClear();
 			// Set the resFracBits
-		  res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
+            res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
+			res.zeroClear();
 			return res;
 		}
 	}
@@ -571,7 +573,7 @@ CBigNum CBigNum::operator<<(const long long& bits) const {
 	}
 	// Copy the given number
 	CBigNum res(*this);
-	for (auto i = 0; i < bits; i++) {
+    for (long long i = 0; i < bits; i++) {
 		if (i >= this->fracs.size()) {
 			res.ints.push_back('0');
 		}
@@ -604,7 +606,7 @@ CBigNum CBigNum::operator>>(const long long& bits) const {
 		res.fracs.insert(res.fracs.begin(), res.ints.begin(), res.ints.end());
 		res.ints.clear();
 		if (bits > this->ints.size()) {
-			for (auto i = 0; i < bits-this->ints.size(); i++) {
+            for (long long i = 0; i < bits-this->ints.size(); i++) {
 				res.fracs.insert(res.fracs.begin(), '0');
 			}
 		}
@@ -658,11 +660,12 @@ CBigNum CBigNum::operator*(const CBigNum& other) const {
 	}
 	// Set the resFracBits
 	res >>= fracBits;
-  res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
+    res.setResFracBits(max(this->resFracBits, other.getResFracBits()));
   // Push a zero to ints while it's empty
 	if (res.getInts().empty()) {
 		res.setInts({'0'});
 	}
+	res.zeroClear();
 	// Revert the fractional part
 	return res;
 }
@@ -729,9 +732,7 @@ CBigNum CBigNum::operator/(const CBigNum& other) const {
 	num1FracBits = num1.fracs.size();
 	num2FracBits = other.fracs.size();
 	num1 = abs(num1) << max(num1FracBits, num2FracBits)+1;
-	CBigNum num2 = abs(other) << max(num1FracBits, num2FracBits);
-	// Divsion draft bits
-	long long draftBits = num1.getInts().size()-num2.getInts().size();
+    CBigNum num2 = abs(other) << max(num1FracBits, num2FracBits);
 	// Compute one more bit to rounding off
 	short tmp = 0;
 	while (res.fracs.size() <= resFracBits) {
@@ -761,6 +762,7 @@ CBigNum CBigNum::operator/(const CBigNum& other) const {
 	if (res.getInts().empty()) {
 		res.setInts({'0'});
 	}
+	res.zeroClear();
 	return res;
 }
 
@@ -776,4 +778,3 @@ CBigNum CBigNum::operator%(const CBigNum& other) const {
 void CBigNum::operator%=(const CBigNum& other) {
 	*this = (*this) % other;
 }
-

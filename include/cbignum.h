@@ -2,9 +2,9 @@
 #define CBIGNUM_H
 
 #include <iostream>
-#include <cstring>
-#include <cstdlib>
+#include <string>
 #include <vector>
+#include <type_traits>
 
 using namespace std;
 
@@ -16,6 +16,16 @@ void vecDisplay(vector<T> vec) {
 	}
 }
 
+// Check the typename
+template<typename T>
+struct is_supported_type : std::disjunction<
+                               std::is_arithmetic<T>,         // int, long, float etc.
+                               std::is_same<T, std::string>   // std::string
+                               > {};
+
+template<typename T>
+constexpr bool is_supported_type_v = is_supported_type<T>::value;
+
 /**
 * @Brief: A Big Num Class store data in two vectors
 * @Author: Chris Chan
@@ -25,6 +35,11 @@ class CBigNum {
 
 friend ostream& operator<<(ostream& os, const CBigNum& num);
 friend ostream& operator<<(ostream& os, const CBigNum* num);
+template <typename T>
+CBigNum any2BigNum(T value) {
+    CBigNum num(value);
+    return num;
+}
 
 public:
 	/**
@@ -145,7 +160,102 @@ public:
 	// Mod
 	CBigNum operator%(const CBigNum& other) const;
 	void operator%=(const CBigNum& other);
-	
+
+    // Addition Template
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, CBigNum>::type operator+(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) + other;
+    }
+    // +=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, void>::type operator+=(const T& value) {
+        *(this) += any2BigNum(value);
+    }
+
+    // Subtraction Template
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, CBigNum>::type operator-(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) - other;
+    }
+    // -=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, void>::type operator-=(const T& value) {
+        *(this) -= any2BigNum(value);
+    }
+
+    // Multiplication Template
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, CBigNum>::type operator*(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) * other;
+    }
+    // *=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, void>::type operator*=(const T& value) {
+        *(this) *= any2BigNum(value);
+    }
+
+    // Division Template
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, CBigNum>::type operator/(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) / other;
+    }
+    // /=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, void>::type operator/=(const T& value) {
+        *(this) /= any2BigNum(value);
+    }
+
+    // Modulo Template
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, CBigNum>::type operator%(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) % other;
+    }
+    // %=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, void>::type operator%=(const T& value) {
+        *(this) %= any2BigNum(value);
+    }
+
+    /* Compare Template */
+    // > & >=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator>(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) > other;
+    }
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator>=(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) >= other;
+    }
+    // < & <=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator<(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) < other;
+    }
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator<=(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) <= other;
+    }
+    // == & !=
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator==(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) == other;
+    }
+    template <typename T>
+    typename std::enable_if<is_supported_type_v<T>, bool>::type operator!=(const T& value) {
+        CBigNum other = any2BigNum(value);
+        return *(this) != other;
+    }
+
 private:
 	/* Main Data Struct */
 	bool positive = true;
@@ -154,163 +264,6 @@ private:
 	// Residual fraction bits
 	long long resFracBits = 8;
 };
-
-/* Operatoin Template */
-template <typename T>
-CBigNum any2BigNum(T value) {
-  CBigNum num(value);
-  return num;
-}
-
-// Addition Template
-template <typename T>
-CBigNum operator+(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num + other;
-}
-template <typename T>
-CBigNum operator+(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return num + other;
-}
-// +=
-template <typename T>
-void operator+=(CBigNum& num, const T& value) {
-    num += any2BigNum(value);
-}
-
-// Subtraction Template
-template <typename T>
-CBigNum operator-(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num - other;
-}
-template <typename T>
-CBigNum operator-(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other - num;
-}
-// -=
-template <typename T>
-void operator-=(CBigNum& num, const T& value) {
-    num -= any2BigNum(value);
-}
-
-// Multiplication Template
-template <typename T>
-CBigNum operator*(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num * other;
-}
-template <typename T>
-CBigNum operator*(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return num * other;
-}
-// *=
-template <typename T>
-void operator*=(CBigNum& num, const T& value) {
-    num *= any2BigNum(value);
-}
-
-// Division Template
-template <typename T>
-CBigNum operator/(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num / other;
-}
-template <typename T>
-CBigNum operator/(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other / num;
-}
-// /=
-template <typename T>
-void operator/=(CBigNum& num, const T& value) {
-    num /= any2BigNum(value);
-}
-
-// Modulo Template
-template <typename T>
-CBigNum operator%(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num % other;
-}
-template <typename T>
-CBigNum operator%(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other % num;
-}
-// %=
-template <typename T>
-void operator%=(CBigNum& num, const T& value) {
-    num %= any2BigNum(value);
-}
-
-/* Compare Template */
-// > & >=
-template <typename T>
-bool operator>(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num > other;
-}
-template <typename T>
-bool operator>(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other > num;
-}
-template <typename T>
-bool operator>=(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num >= other;
-}
-template <typename T>
-bool operator>=(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other >= num;
-}
-// < & <=
-template <typename T>
-bool operator<(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num < other;
-}
-template <typename T>
-bool operator<(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other < num;
-}
-template <typename T>
-bool operator<=(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num <= other;
-}
-template <typename T>
-bool operator<=(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other <= num;
-}
-// == & !=
-template <typename T>
-bool operator==(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num == other;
-}
-template <typename T>
-bool operator==(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other == num;
-}
-template <typename T>
-bool operator!=(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
-    return num != other;
-}
-template <typename T>
-bool operator!=(const T& value, const CBigNum& num) {
-    CBigNum other = any2BigNum(value);
-    return other != num;
-}
 
 // abs Function
 CBigNum abs(const CBigNum& num);

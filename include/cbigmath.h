@@ -19,7 +19,11 @@
 #define SINA1 0.13052619222005159
 #define COSA1 0.99144486137381041
 
-const CBigNum ln10("2.302585092994046");
+template <typename T>
+CBigNum any2BigNum(T value) {
+    CBigNum num(value);
+    return num;
+}
 
 /**
 * @Brief: Polynomial Calculation
@@ -220,46 +224,48 @@ CBigNum exp(const T& value) {
 */
 template <typename T>
 CBigNum pow(const CBigNum& num, const T& value) {
-    CBigNum other = any2BigNum(value);
+    CBigNum other = CBigNum(value);
     // Deal with 0 power
+    if (other == 0) {
+        return CBigNum(1);
+    }
     if (num == 0) {
     	return CBigNum(0);
-		}
-    if (other == 0) {
-    	return CBigNum(1);
-		}
+    }
     CBigNum res(1);
     bool posPower = other.getPositive();
     other = abs(other);
     // Integer Power
     if (other.getFracs().empty()) {
     	CBigNum base = num;
-    	while (other > 0) {
-				if (other % 2 == 1) {
-          res *= base;
-          res.round(num.getResFracBits()+1);
-        }
-        base *= base;
-        base.round(num.getResFracBits()+1);
-        other = other.intDivision(2).first;
+        while (other > 0) {
+            if (other % 2 == 1) {
+                res *= base;
+                res.round(num.getResFracBits()+1);
+            }
+            base *= base;
+            base.round(num.getResFracBits()+1);
+            other = other.intDivision(2).first;
    		}
    		res.round(num.getResFracBits());
    		// Deal with the negative power
    		CBigNum one(1);
    		one.setResFracBits(num.getResFracBits());
    		return posPower ? res : (one/res);
-		}
-		// a^x = e^(x*lna)
-		else {
-			if (num < 0) {
-				throw "Can't deal with a^x when a<0.";
-			}
-			res = exp(other*ln(num)); 
-			// Deal with the negative power
+    }
+    // a^x = e^(x*lna)
+    else {
+        if (num < 0) {
+            throw "Can't deal with a^x when a<0.";
+        }
+        CBigNum tmp = other*ln(num);
+        tmp.setResFracBits(num.getResFracBits());
+        res = exp(tmp);
+        // Deal with the negative power
    		CBigNum one(1);
    		one.setResFracBits(num.getResFracBits());
    		return posPower ? res : (one/res);
-		}
+    }
 }
 
 /**
@@ -274,33 +280,35 @@ CBigNum ASINTNV(const CBigNum& x);
 long long ATAN_N_find(const CBigNum& x);
 CBigNum ATANTNV(const CBigNum& x);
 // arcsin
-CBigNum asin(const CBigNum& a);
+CBigNum asin(const CBigNum& a, CBigNum PI_Given=PI);
 template <typename T>
-CBigNum asin(const T& value) {
+CBigNum asin(const T& value, CBigNum PI_Given=PI) {
     CBigNum num = any2BigNum(value);
-    return asin(num);
+    return asin(num, PI_Given);
 }
 // arccos
-CBigNum acos(const CBigNum& a);
+CBigNum acos(const CBigNum& a, CBigNum PI_Given=PI);
 template <typename T>
-CBigNum acos(const T& value) {
+CBigNum acos(const T& value, CBigNum PI_Given=PI) {
     CBigNum num = any2BigNum(value);
-    return acos(num);
+    return acos(num, PI_Given);
 }
 // arctan
-CBigNum atan(const CBigNum& a);
+CBigNum atan(const CBigNum& a, CBigNum PI_Given=PI);
 template <typename T>
-CBigNum atan(const T& value) {
+CBigNum atan(const T& value, CBigNum PI_Given=PI) {
     CBigNum num = any2BigNum(value);
-    return atan(num);
+    return atan(num, PI_Given);
 }
 // arccot
-CBigNum acot(const CBigNum& a);
+CBigNum acot(const CBigNum& a, CBigNum PI_Given=PI);
 template <typename T>
-CBigNum acot(const T& value) {
+CBigNum acot(const T& value, CBigNum PI_Given=PI) {
     CBigNum num = any2BigNum(value);
-    return acot(num);
+    return acot(num, PI_Given);
 }
 
-#endif
+// Calculate π
+CBigNum PI_Calculate(long long bits);
 
+#endif
